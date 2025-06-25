@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Space Weather Monitoring Station</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --primary: #00aa00;
+      --card-bg: #f0fff0;
+      --link-color: white;
+    }
+
+    .dark-mode {
+      --bg-color: #1b1b1b;
+      --text-color: #ffffff;
+      --primary: #00ff88;
+      --card-bg: #2a2a2a;
+      --link-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: 0.3s;
+    }
+
+    nav {
+      background-color: var(--primary);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-title {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: var(--link-color);
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    .main-content {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .intro {
+      margin-bottom: 2rem;
+      animation: fadeIn 1.5s ease;
+    }
+
+    .intro h1 {
+      color: var(--primary);
+      font-size: 2rem;
+    }
+
+    .intro p {
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      width: 180px;
+      box-shadow: 0 4px 10px rgba(0, 128, 0, 0.1);
+      animation: popUp 0.8s ease-in;
+    }
+
+    .stat-card h3 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .chart-container {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 128, 0, 0.1);
+    }
+
+    canvas {
+      max-height: 300px;
+    }
+
+    .footer-names {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      font-size: 0.8rem;
+      background-color: rgba(0, 170, 0, 0.05);
+      padding: 8px 12px;
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      line-height: 1.4;
+    }
+
+    .toggle-icon {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes popUp {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    @media(max-width: 600px) {
+      .stat-card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-title">Space Weather Station</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="analytics.html">Analytics</a>
+      <a href="settings.html">Settings</a>
+      <a href="logout.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="intro">
+      <h1>Simulated Space Weather Monitoring Station</h1>
+      <p>
+        This Arduino-based IoT system simulates real-time monitoring of space weather hazards using temperature, humidity,
+        flame, and smoke sensors. It includes automatic alerts, web integration, and data visualization for
+        enhanced disaster awareness, environmental education, and smart sensor interaction.
+      </p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Real-Time</h3>
+        <p>Continuously monitors sensor data</p>
+      </div>
+      <div class="stat-card">
+        <h3>Automated</h3>
+        <p>Alerts via buzzers, LCD & servo</p>
+      </div>
+      <div class="stat-card">
+        <h3>Web Connected</h3>
+        <p>Control & view remotely via browser</p>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h3>Sample Sensor Data</h3>
+      <canvas id="overviewChart"></canvas>
+    </div>
+  </div>
+
+  <div class="footer-names">
+    Created by:<br>
+    Vignesh R [1RV24CS318]<br>
+    Yash Agarwal [1RV24CS325]<br>
+    Vyapak Sood [1RV24CS322]
+  </div>
+
+  <button class="toggle-icon" onclick="toggleDarkMode()">🌙</button>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-icon');
+      icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+
+    const ctx = document.getElementById('overviewChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['10:00', '10:05', '10:10', '10:15', '10:20'],
+        datasets: [
+          {
+            label: 'Temperature (°C)',
+            data: [27, 28, 29, 30, 31],
+            borderColor: '#2e8b57',
+            backgroundColor: 'rgba(46, 139, 87, 0.2)',
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: 'Smoke (ppm)',
+            data: [20, 30, 25, 40, 35],
+            borderColor: '#228b22',
+            backgroundColor: 'rgba(34, 139, 34, 0.2)',
+            tension: 0.4,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

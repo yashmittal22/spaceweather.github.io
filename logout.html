@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Logout - Space Weather Station</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --card-bg: #f0fff0;
+      --button-bg: #008000;
+    }
+
+    .dark-mode {
+      --bg-color: #1b1b1b;
+      --text-color: #ffffff;
+      --card-bg: #2b2b2b;
+      --button-bg: #006600;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      padding: 2rem 3rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 128, 0, 0.2);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      background-color: var(--button-bg);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #006400;
+    }
+
+    .toggle-icon {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
+      background-color: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>You have been logged out</h2>
+    <p>Thank you for using the Simulated Space Weather Monitoring Station.</p>
+    <a href="login.html" class="btn">Back to Login</a>
+  </div>
+
+  <button class="toggle-icon" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode">
+    🌙
+  </button>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-icon');
+      icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+  </script>
+
+</body>
+</html>
