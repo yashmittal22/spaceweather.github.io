@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Analytics - Space Weather Station</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --nav-bg: #00aa00;
+      --card-bg: #f0fff0;
+      --link-color: white;
+      --highlight: #006400;
+      --table-header: #dff0d8;
+    }
+
+    .dark-mode {
+      --bg-color: #1b1b1b;
+      --text-color: #ffffff;
+      --nav-bg: #004d00;
+      --card-bg: #2b2b2b;
+      --link-color: #ffffff;
+      --highlight: #00ff88;
+      --table-header: #333;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: 0.3s ease all;
+    }
+
+    nav {
+      background-color: var(--nav-bg);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-title {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: var(--link-color);
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--highlight);
+    }
+
+    .main-content {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .chart-block {
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 128, 0, 0.1);
+    }
+
+    canvas {
+      width: 100% !important;
+      max-height: 280px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    th {
+      background-color: var(--table-header);
+    }
+
+    .toggle-icon {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
+      background-color: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-title">Space Weather Analytics</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="analytics.html">Analytics</a>
+      <a href="settings.html">Settings</a>
+      <a href="logout.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <h2>Sensor Data Visualization</h2>
+
+    <div class="chart-block">
+      <h3>Temperature Over Time</h3>
+      <canvas id="tempChart"></canvas>
+    </div>
+
+    <div class="chart-block">
+      <h3>Humidity vs Smoke Levels</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+
+    <div class="chart-block">
+      <h3>Flame Detection Ratio</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="chart-block">
+      <h3>Recent Sensor Readings</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Temperature (°C)</th>
+            <th>Humidity (%)</th>
+            <th>Smoke (ppm)</th>
+            <th>Flame</th>
+          </tr>
+        </thead>
+        <tbody id="readingTable">
+          <!-- Table rows will be inserted by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="toggle-icon" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode">🌙</button>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-icon');
+      icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+
+    // Line Chart: Temperature
+    const tempCtx = document.getElementById('tempChart').getContext('2d');
+    new Chart(tempCtx, {
+      type: 'line',
+      data: {
+        labels: ['10:00', '10:05', '10:10', '10:15', '10:20'],
+        datasets: [{
+          label: 'Temperature (°C)',
+          data: [26.5, 27.1, 27.8, 28.3, 29.0],
+          borderColor: '#2e8b57',
+          backgroundColor: 'rgba(46,139,87,0.2)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    // Bar Chart: Humidity & Smoke
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['10:00', '10:05', '10:10', '10:15', '10:20'],
+        datasets: [
+          {
+            label: 'Humidity (%)',
+            data: [60, 63, 64, 65, 67],
+            backgroundColor: '#3cb371'
+          },
+          {
+            label: 'Smoke (ppm)',
+            data: [20, 25, 24, 28, 30],
+            backgroundColor: '#228b22'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Pie Chart: Flame Detection
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: ['No Flame', 'Flame Detected'],
+        datasets: [{
+          data: [12, 3],
+          backgroundColor: ['#9acd32', '#ff6347']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    // Table of Readings
+    const readings = [
+      ['10:00', 26.5, 60, 20, 'No'],
+      ['10:05', 27.1, 63, 25, 'No'],
+      ['10:10', 27.8, 64, 24, 'Yes'],
+      ['10:15', 28.3, 65, 28, 'No'],
+      ['10:20', 29.0, 67, 30, 'No']
+    ];
+
+    const tableBody = document.getElementById('readingTable');
+    readings.forEach(row => {
+      const tr = document.createElement('tr');
+      row.forEach(val => {
+        const td = document.createElement('td');
+        td.textContent = val;
+        tr.appendChild(td);
+      });
+      tableBody.appendChild(tr);
+    });
+  </script>
+
+</body>
+</html>
