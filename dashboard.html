@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Space Weather Station</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --nav-bg: #00aa00;
+      --card-bg: #f0fff0;
+      --card-border: #008000;
+      --link-color: white;
+      --highlight: #006400;
+    }
+
+    .dark-mode {
+      --bg-color: #1b1b1b;
+      --text-color: #ffffff;
+      --nav-bg: #004d00;
+      --card-bg: #2b2b2b;
+      --card-border: #00ff88;
+      --link-color: #ffffff;
+      --highlight: #00ff88;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    nav {
+      background-color: var(--nav-bg);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-title {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: var(--link-color);
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--highlight);
+    }
+
+    .main-content {
+      padding: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-left: 6px solid var(--card-border);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 128, 0, 0.1);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .reading {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .status {
+      font-size: 0.95rem;
+      color: gray;
+    }
+
+    .chart-container {
+      max-width: 700px;
+      margin: auto;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 128, 0, 0.1);
+    }
+
+    .toggle-icon {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
+      background-color: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-title">Space Weather Dashboard</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="analytics.html">Analytics</a>
+      <a href="settings.html">Settings</a>
+      <a href="logout.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <h2>Live Sensor Readings</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Temperature</h3>
+        <div class="reading" id="tempValue">-- °C</div>
+        <div class="status">Measured via DHT11</div>
+      </div>
+      <div class="card">
+        <h3>Humidity</h3>
+        <div class="reading" id="humidityValue">-- %</div>
+        <div class="status">Measured via DHT11</div>
+      </div>
+      <div class="card">
+        <h3>Flame Detection</h3>
+        <div class="reading" id="flameValue">--</div>
+        <div class="status">Measured via Flame Sensor</div>
+      </div>
+      <div class="card">
+        <h3>Smoke Level</h3>
+        <div class="reading" id="smokeValue">-- ppm</div>
+        <div class="status">Measured via Smoke Sensor</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="sensorChart"></canvas>
+    </div>
+  </div>
+
+  <button class="toggle-icon" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode">
+    🌙
+  </button>
+
+  <script>
+    function updateSensorData() {
+      // Simulated values for live display and chart
+      const temp = 28.4;
+      const humidity = 60;
+      const flame = 0; // 0 = No Flame, 1 = Detected
+      const smoke = 24;
+
+      document.getElementById("tempValue").textContent = temp + " °C";
+      document.getElementById("humidityValue").textContent = humidity + " %";
+      document.getElementById("flameValue").textContent = flame === 1 ? "Flame Detected" : "No Flame";
+      document.getElementById("smokeValue").textContent = smoke + " ppm";
+
+      // Update Chart Data
+      sensorChart.data.datasets[0].data = [temp, humidity, smoke, flame];
+      sensorChart.update();
+    }
+
+    const ctx = document.getElementById('sensorChart').getContext('2d');
+    const sensorChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Temperature (°C)', 'Humidity (%)', 'Smoke (ppm)', 'Flame (1/0)'],
+        datasets: [{
+          label: 'Sensor Data',
+          backgroundColor: ['#2e8b57', '#3cb371', '#228b22', '#9acd32'],
+          data: [0, 0, 0, 0]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Current Sensor Values'
+          }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    setInterval(updateSensorData, 5000);
+    updateSensorData(); // Initial call
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-icon');
+      icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+  </script>
+</body>
+</html>
